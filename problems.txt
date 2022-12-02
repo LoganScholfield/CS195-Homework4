@@ -1,0 +1,106 @@
+CS225 Programming Languages: Homework 4
+Due date: Friday, December 2 by 11:59PM
+Submission:: Please submit your solutions to Problems 1-6 (and 8 for Graduate Students) as one file, and
+your completed catml.ml file to answer Problem 7. You can embed your solutions to other problems in
+that file in comments if you prefer. All submissions must be made electronically in Blackboard.
+
+
+Problem 1 (5 points). Define the factorial function in CatML using Fix (i.e., primitive recursion, not the
+Y or Z combinator). Your definition should run correctly on examples.
+
+for ocaml...
+let rec fact n = 
+  if n <= 1 then 1 else n * fact (n - 1)
+
+for catml...
+
+Let mult = (Fix m . x . Fun y . If x = 0 Then 0 Else y + ((m (x - 1)) y)) In
+Let fact = (Fix f . y . If y = 0 Then 1 Else (mult y) (f (y-1))) In
+fact 4
+
+
+
+Definition 1.4 (Closed expressions) An expression e is closed iff it contains no free variable occurences.
+
+Problem 2 (5 points). For each of the following CatML expressions e, state whether e is closed or not,
+and why:
+a. 1 + 2 - is closed, it contains no free variables
+b. x - is not closed becuae it contains a free variable which is x
+c. (Fun x . x + y) - is not closed, it contains y which is a free variable
+d. (Fun x .(Fun y . x + y)) - is closed, there are no free variables, each are bound by the calling of its function
+e. (Fun x .(Fun y . x + y))(y) - is not closed, when y is put into the function it is free
+
+
+Problem 3 (5 points). For each of the following substitutions e[v/x] 
+specify e such that e
+0 = e[v/x]: = v
+a. x[True/x] = True
+b. x[3/y] = x
+c. (Fun x . x + y)[3/y] = (Fun x.x + 3)
+d. (Fun x .(Fun y . x And y))[False/x] = (Fun x .(Fun y . x And y))
+e. (Fun y . x And y)[False/x] = (Fun y . False And y)
+
+
+Problem 4 (5 points). For each of the following CatML expressions e, specify whether there exists e
+such that e → e, and if so specify e
+
+a. (Fun y . 3 + y) 
+  There does not exist 
+b. (Fun y . 3 + y) 5 
+  There exists => (3 + 5)
+c. (Fun y . 3 + y) False
+  There exists => (3 + False)
+d. Let f = (Fun y . 3 + y) In (f 2) + (f 3)
+  There exists => ((Fun y . (3 + y)) 2 + (Fun y . (3 + y)) 3)
+e. (Fix looper . x . looper x) True
+  There exists => Fix looper . x . looper x True
+
+
+Problem 5 (5 points). Which of the expressions in the previous problem:
+a. are reducible?
+b,d,c,e
+b. diverge?
+e
+c. have a valuation?
+a,b,d
+d. are stuck?
+c
+e. go wrong?
+c
+
+Problem 6 (5 points). For each of the expression ej that you’ve identified as having a valuation in the
+previous problem, provide it’s complete trace from ej to its valuation.
+
+
+a. 
+has a valuation as it is already evaluated (Fun y . 3 + y) 
+
+b. 
+(Fun y . (3 + y)) 5
+->
+(3 + 5)
+->
+8
+
+d.
+Let f = (Fun y . (3 + y)) In
+(f 2 + f 3)
+->
+((Fun y . (3 + y)) 2 + (Fun y . (3 + y)) 3)
+->
+((3 + 2) + (Fun y . (3 + y)) 3)
+->
+(5 + (Fun y . (3 + y)) 3)
+->
+(5 + (3 + 3))
+->
+(5 + 6)
+->
+11
+
+
+
+Problem 7 (70 points). Complete the CatML interpreter in catml.ml provided in the GitHub repo. See
+that file for details.
+
+complete closed, subst, redx
